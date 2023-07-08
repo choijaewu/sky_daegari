@@ -12,4 +12,4 @@ while running:
         if event.type == pygame.QUIT: #X버튼 눌렀을 때
             running = 0 #프로그램 종료
 
-pygame.quit() #종료
+pygame.quit() #종료 
