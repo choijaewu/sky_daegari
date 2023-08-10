@@ -1,34 +1,58 @@
-
 import pygame
-import random
+import sys
 
+pygame.init()
 
-pygame.init() #초기화
+screen_width, screen_height = 800, 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("마우스 클릭으로 스프라이트 클릭 감지")
 
+# 스프라이트 클래스 정의
+class MySprite(pygame.sprite.Sprite):
+    def __init__(self, image, x, y):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.num = 1
 
+# 스프라이트 그룹 생성
+all_sprites_group = pygame.sprite.Group()
 
-game_display = pygame.display.set_mode((1200,700)) #게임 창 크기
-pygame.display.set_caption("게임이름") #게임 창 이름
+# 빨간색 스프라이트 이미지 생성
+sprite_image = pygame.Surface((50, 50))
+sprite_image.fill((255, 0, 0))
 
+# 스프라이트 생성
+sprite1 = MySprite(sprite_image, 100, 200)
+sprite2 = MySprite(sprite_image, 300, 400)
 
-running = 1 #게임이 실행중인가?
+# 스프라이트 그룹에 스프라이트 추가
+all_sprites_group.add(sprite1)
+all_sprites_group.add(sprite2)
 
-
+running = True
 while running:
-    for event in pygame.event.get(): #이벤트 입력
-        if event.type == pygame.QUIT: #X버튼 눌렀을 때
-            running = 0 #프로그램 종료
-        
-    li = [i for i in range(950, 600, -50)]
-    li2 = ['건후', '좋건후', '건후 바보', '김건후']
-    for i in range(6):
-        pygame.draw.circle(game_display, 'blue', (li[i],350), 20)
-        print(li2[i * -1])
-    x, y = 300, 350
-    pygame.draw.circle(game_display, 'red', (x,y), 20)
-    pygame.display.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-print(li2[-1])
-print(li2[-2])
+        # 마우스 클릭 이벤트 감지
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            clicked_sprites = [sprite for sprite in all_sprites_group if sprite.rect.collidepoint(mouse_x, mouse_y)]
 
-pygame.quit() #종료 
+            # 마우스로 클릭한 스프라이트 출력
+            for sprite in clicked_sprites:
+                print(f"클릭한 스프라이트 위치: ({sprite.rect.x}, {sprite.rect.y}, {sprite.num})")
+
+    screen.fill((255, 255, 255))
+
+    # 스프라이트 그룹 내의 스프라이트들 그리기
+    for sprite in all_sprites_group:
+        screen.blit(sprite.image, sprite.rect)
+
+    pygame.display.flip()
+
+pygame.quit()
