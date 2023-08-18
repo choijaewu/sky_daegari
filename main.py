@@ -16,8 +16,6 @@ screen = pygame.display.set_mode((screen_width, screen_height)) #게임 창 크�
 pygame.display.set_caption("김건후") #게임 창 이름
 clock = pygame.time.Clock()
 
-screen.blit(background_image, (0,0)) #배경이미지
-
 enemy_xlocation = [950, 900, 850, 800, 750, 700, 650, 600] #적 x좌표
 enemy_ylocation = 350 #적 y좌표
 
@@ -155,6 +153,84 @@ def makeStage(stage):
         enemies.add(enemy)
     return enemies
 
+def start_story():
+    #색 정의
+    black = (0, 0, 0)
+    white = (255, 255, 255)
+    red = (255, 0, 0)
+    purple = (148, 0, 211)
+
+    screen_width, screen_height = 1200, 700 #화면 넓이, 높이
+    screen = pygame.display.set_mode((screen_width, screen_height)) #게임 창 크기
+
+    display_duration = 1000 #1초 (단위:밀리초)
+    text_change_delay = 2000
+    start_time = pygame.time.get_ticks()
+
+    #text정의
+    current_text = "이곳은 새벽의 나라"
+    text_color = white
+    text = koreanfont.render(current_text, True, white)
+    text_rect = text.get_rect()
+    text_rect.center = (screen_width // 2, screen_height // 2)#크기
+
+    screen.fill(black)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        screen.blit(text,text_rect)
+
+        current_time = pygame.time.get_ticks()
+        if current_time - start_time >= text_change_delay:    #여기서 시간을 계산
+            if current_text == "이곳은 새벽의 나라":
+                current_text = "다른 나라에 비해 발전은 늦지만"
+
+            elif current_text == "다른 나라에 비해 발전은 늦지만":
+                current_text = "높은 인망으로 호평을 받는 곳이다."
+
+            elif current_text == "높은 인망으로 호평을 받는 곳이다.":
+                current_text = "그런데"
+                text_color = red
+
+            elif current_text == "그런데":
+                current_text = "땅이 갈라지며 나타난"
+                text_color = white
+
+            elif current_text == "땅이 갈라지며 나타난":
+                current_text = "절망의 군대"
+                text_color = purple
+
+            elif current_text == "절망의 군대":
+                current_text = "그들은 모든 건물을 불태우고 사람들을 죽였다."
+                text_color = white
+
+            elif current_text == "그들은 모든 건물을 불태우고 사람들을 죽였다.":
+                current_text = "그러나 나라를 구하기 위해 나타난 전사"
+
+            elif current_text == "그러나 나라를 구하기 위해 나타난 전사":
+                current_text = "그는 곧장 절망의 미로로 들어갔고"
+
+            elif current_text == "그는 곧장 절망의 미로로 들어갔고":
+                current_text = "적을 섬멸해 나간다."
+
+            elif current_text == "적을 섬멸해 나간다.":
+                current_text = "그의 이름은 바로..."
+
+            screen.fill(black)
+            text = koreanfont.render(current_text, True, text_color)
+            text_rect = text.get_rect()
+            text_rect.center = (screen_width // 2, screen_height // 2)
+
+            start_time = pygame.time.get_ticks()
+                
+        pygame.display.flip()
+
+    pygame.quit()
+
 def game_loop():
     player = playerSprite("tempplayer.png", (300, 350)) #class 생성
     player_group = pygame.sprite.RenderPlain(player)
@@ -184,7 +260,7 @@ def game_loop():
                         if len(enemies) == 0:
                             chest()
                             stage += 1
-                            makeStage(stage)
+                            enemies = makeStage(stage)
                             playerturn = 1
 
         else:
@@ -195,7 +271,8 @@ def game_loop():
                 if enemy.enemy_type == 4:
                     if enemy.skill_turn == 0: enemy.boss_skill(enemies)
                     else: enemy.skill_turn -= 1
-
+    
+        screen.blit(background_image, (0,0)) #배경이미지
         player_group.clear(screen, background_image)
         enemies.clear(screen, background_image)
         cards.clear(screen, background_image)
@@ -209,16 +286,30 @@ def game_loop():
     pygame.quit() #종료
 
 def chest():
-    pass #open chest
+
+
+    running = True
+    chestcard = []
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                pos = pygame.mouse.get_pos()
+                if True: #마우스랑 상자가 닿았는가?
+                    chestcard.append() #카드 추가
+
+        
 
 def end():
-    running = 0
+    running = False
     
 if __name__ == "__main__": game_loop()
 
 #todo 코스트가 부족합니다 메세지 지우는 기능 추가
 #todo 스테이지 추가
-#todo 카드 파트(은율)
+#todo 카드 파트
 #todo 카드 효과
 #todo 기본 카드 추가
 #todo 앤딩 추가

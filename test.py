@@ -1,58 +1,47 @@
 import pygame
-import sys
+from pyc import *
+import time
+
 
 pygame.init()
 
-screen_width, screen_height = 800, 600
+screen_width, screen_height = 1200, 700
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("마우스 클릭으로 스프라이트 클릭 감지")
+koreanfont = pygame.font.SysFont('malgungothic', 30)
+story = ['건후바보',
+         '건후건후',
+         '옛날 옛적에 어느 한 마을에 김건후라는 소녀가 살았어요',
+         '그 아이는 가난했지만 어머니의 사랑만큼은 가득했죠',
+         '어느날 부자가 그녀에게 와서 이렇게 말했어요',
+         '금을 줄테니 그 순간을 나와 바꾸지 않을래?'
+         '그러자 건후가 말했어요. "도를 아십니까?"']
+times = [1, 1, 3, 3, 3, 3, 3]
+pos = [[540.0, 30],
+       [540.0, 80],
+       [216.5, 130],
+       [242.5, 180],
+       [287.5, 230],
+       [305.0, 280],
+       [3100.0, 330]]
+    
 
-# 스프라이트 클래스 정의
-class MySprite(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
-        super().__init__()
-        self.image = image
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.num = 1
+def storyscene():
+    for i in range(len(story)):
+        screen.fill((0,0,0)) #검은색 배경
+        for j in range(i+1):
+            message = koreanfont.render(story[j], True, (100,100,100)) #메세지 지정
+            screen.blit(message, pos[j]) #메세지 띄우기
 
-# 스프라이트 그룹 생성
-all_sprites_group = pygame.sprite.Group()
+        pygame.display.update() #화면 업데이트
+        
+        for event in pygame.event.get(): #이벤트 입력
+            if event.type == pygame.QUIT: #X버튼 눌렀을 때
+                break #종료
+        
+        time.sleep(times[i]) #멈추기
 
-# 빨간색 스프라이트 이미지 생성
-sprite_image = pygame.Surface((50, 50))
-sprite_image.fill((255, 0, 0))
+    pygame.quit()
 
-# 스프라이트 생성
-sprite1 = MySprite(sprite_image, 100, 200)
-sprite2 = MySprite(sprite_image, 300, 400)
 
-# 스프라이트 그룹에 스프라이트 추가
-all_sprites_group.add(sprite1)
-all_sprites_group.add(sprite2)
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        # 마우스 클릭 이벤트 감지
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            clicked_sprites = [sprite for sprite in all_sprites_group if sprite.rect.collidepoint(mouse_x, mouse_y)]
-
-            # 마우스로 클릭한 스프라이트 출력
-            for sprite in clicked_sprites:
-                print(f"클릭한 스프라이트 위치: ({sprite.rect.x}, {sprite.rect.y}, {sprite.num})")
-
-    screen.fill((255, 255, 255))
-
-    # 스프라이트 그룹 내의 스프라이트들 그리기
-    for sprite in all_sprites_group:
-        screen.blit(sprite.image, sprite.rect)
-
-    pygame.display.flip()
-
-pygame.quit()
+        
+if __name__ == "__main__": storyscene()
