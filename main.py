@@ -168,15 +168,31 @@ def start_story():
     start_time = pygame.time.get_ticks()
 
     #text정의
-    current_text = "이곳은 새벽의 나라"
-    text_color = white
-    text = koreanfont.render(current_text, True, white)
+    text_info = [
+        ["이곳은 새벽의 나라", white],
+        ["다른 나라에 비해 발전은 늦지만", white],
+        ["높은 인망으로 호평을 받는 곳이다.", white],
+        ["그런데", red],
+        ["땅이 갈라지며 나타난", white],
+        ["절망의 군대", purple],
+        ["그들은 모든 건물을 불태우고 사람들을 죽였다.", white],
+        ["그러나 나라를 구하기 위해 나타난 전사", white],
+        ["그는 곧장 절망의 미로로 들어갔고", white],
+        ["적을 섬멸해 나간다.", white],
+        ["그의 이름은 바로...", white]
+        ]
+
+    current_text = text_info[0][0]
+    text_color = text_info[0][1]
+    text = koreanfont.render(current_text, True, text_color)
     text_rect = text.get_rect()
     text_rect.center = (screen_width // 2, screen_height // 2)#크기
+
 
     screen.fill(black)
 
     running = True
+    i = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -185,54 +201,28 @@ def start_story():
         screen.blit(text,text_rect)
 
         current_time = pygame.time.get_ticks()
-        if current_time - start_time >= text_change_delay:    #여기서 시간을 계산
-            if current_text == "이곳은 새벽의 나라":
-                current_text = "다른 나라에 비해 발전은 늦지만"
+        if current_time - start_time >= text_change_delay:  #여기서 시간을 계산
+            i += 1
+            if len(text_info) > i:
+                current_text = text_info[i][0]
+                text_color = text_info[i][1]
 
-            elif current_text == "다른 나라에 비해 발전은 늦지만":
-                current_text = "높은 인망으로 호평을 받는 곳이다."
+                screen.fill(black)
+                text = koreanfont.render(current_text, True, text_color)
+                text_rect = text.get_rect()
+                text_rect.center = (screen_width // 2, screen_height // 2)
 
-            elif current_text == "높은 인망으로 호평을 받는 곳이다.":
-                current_text = "그런데"
-                text_color = red
+                start_time = pygame.time.get_ticks()
 
-            elif current_text == "그런데":
-                current_text = "땅이 갈라지며 나타난"
-                text_color = white
-
-            elif current_text == "땅이 갈라지며 나타난":
-                current_text = "절망의 군대"
-                text_color = purple
-
-            elif current_text == "절망의 군대":
-                current_text = "그들은 모든 건물을 불태우고 사람들을 죽였다."
-                text_color = white
-
-            elif current_text == "그들은 모든 건물을 불태우고 사람들을 죽였다.":
-                current_text = "그러나 나라를 구하기 위해 나타난 전사"
-
-            elif current_text == "그러나 나라를 구하기 위해 나타난 전사":
-                current_text = "그는 곧장 절망의 미로로 들어갔고"
-
-            elif current_text == "그는 곧장 절망의 미로로 들어갔고":
-                current_text = "적을 섬멸해 나간다."
-
-            elif current_text == "적을 섬멸해 나간다.":
-                current_text = "그의 이름은 바로..."
-
-            screen.fill(black)
-            text = koreanfont.render(current_text, True, text_color)
-            text_rect = text.get_rect()
-            text_rect.center = (screen_width // 2, screen_height // 2)
-
-            start_time = pygame.time.get_ticks()
+            else:
+                running = False
                 
         pygame.display.flip()
 
     pygame.quit()
 
 def game_loop():
-    player = playerSprite("tempplayer.png", (300, 350)) #class 생성
+    player = playerSprite("player.png", (300, 350)) #class 생성
     player_group = pygame.sprite.RenderPlain(player)
 
     running = 1 #게임이 실행중인가?
