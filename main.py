@@ -9,7 +9,7 @@ pygame.init() #초기화
 koreanfont = pygame.font.SysFont('malgungothic',30) #한글 폰트(맑은고딕)
 
 background_image = pygame.image.load("background.png") #배경이미지
-chest_image = pygame.image.load("") #상자이미지
+chest_image = pygame.image.load("상자.png") #상자이미지
 
 screen_width, screen_height = 1200, 700 #화면 넓이, 높이
 screen = pygame.display.set_mode((screen_width, screen_height)) #게임 창 크기
@@ -23,8 +23,8 @@ class playerSprite(pygame.sprite.Sprite):
     def __init__(self, image, position):
         pygame.sprite.Sprite.__init__(self)
         self.player_image = pygame.image.load(image)
-        self.player_position = self.rect.center = position
         self.rect = self.player_image.get_rect()
+        self.player_position = self.rect.center = position
         self.max_health = self.current_health = 5
         self.max_cost = self.current_cost = 3
         self.critical = 25
@@ -35,6 +35,9 @@ class playerSprite(pygame.sprite.Sprite):
         if damage >= self.defending: real_damage = damage - self.defending
         else: self.defending -= damage
         self.current_health -= real_damage
+
+    def increase_defense(self, amount):
+        self.defending += amount
 
     def canUse(self, cost):
         return self.current_cost >= cost
@@ -87,14 +90,14 @@ class enemySprite(pygame.sprite.Sprite):
     
     def boss_skill(self, enemies):
         enemy = enemySprite(randomEnemy(5,3,2), (enemy_xlocation[len(enemies)], enemy_ylocation))
-        enemies.add(enemy)
+        enemies.append(enemy)
         self.skill_turn = 3
 
 class cardSprite(pygame.sprite.Sprite):
     def __init__(self, card_type):
         pygame.sprite.Sprite.__init__(self)
-        images = ['','','','','','','','','','']
-        costs = []
+        images = ['단검.png','장검.png','독화살.png','불화살.png','얼음화살.png','낡은방패.png','방패.png','최후의방패.png','음료수.png','물약.png', '고기.png']
+        costs = [1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1] #단검 장검 독화살 불화살 얼음화살 낡은방패 방패 최후의방패 음료수 물약 고기
         positions = []
         self.card_image = pygame.image.load(images[card_type - 1])
         self.card_cost = costs[card_type - 1]
@@ -102,28 +105,59 @@ class cardSprite(pygame.sprite.Sprite):
         self.rect = self.card_image.get_rect()
         self.card_type = card_type
     
-    def useCard(self):
+    def useCard(self, enemies):
         if playerSprite.canUse(self.card_cost):
+            if self.card_type  == 1 or self.card_type == 2 or self.card_type== 3:
+                while True:
+                    if pygame.mouse.get_pressed()[0]:
+                        mouseposition = pygame.mouse.get_pos()
+                        for enemy in enemies:
+                            if enemy.rect.collidepoint(mouseposition):
+                                chosen = enemies.index(enemy)
+                                break
+
             playerSprite.usecost(self.card_cost)
-            if self.card_type == 1:
-                pass #1번카드 효과
-            elif self.card_type == 2:
-                pass #2번카드 효과
-            elif self.card_type == 3:
-                pass #3번카드 효과
-            elif self.card_type == 4:
-                pass #4번카드 효과
-            elif self.card_type == 5:
-                pass #5번카드 효과
-            elif self.card_type == 6:
-                pass #6번카드 효과
-            elif self.card_type == 7:
-                pass #7번카드 효과
-        
+            if self.card_type == 1:       #단검
+                enemy = enemies[chosen]
+                enemy.demaged(3)
+
+            elif self.card_type == 2:     #장검
+                enemy = enemies[chosen]
+                enemy2 = enemies[chosen+1]
+                enemy.demaged(2)
+                enemy2.demaged(2)
+
+
+            elif self.card_type == 3:     #화살 : 능력 넣어야함
+                enemy = enemies[chosen]
+                enemy.demaged(2)
+            
+            elif self.card_type == 4:     #낡은 방패
+                playerSprite.increase_defense(1)
+
+            elif self.card_type == 5:    #방패
+                playerSprite.increase_defense(3)
+
+            elif self.card_type == 6:   #최후의 방패
+                playerSprite.increase_defense(5)
+
+            elif self.card_type == 7:   #음료수
+                playerSprite.cost_increase(1)
+
+            elif self.card_type == 8:   #물약
+                playerSprite.cost_recover(4)
+
+            elif self.card_type == 9:   #고기
+                playerSprite.health_recover(2)
+
+                
         else: 
-            message_costscarce = koreanfont.render('코스트가 부족합니다',True, (0,0,0))
-            message_costscarce_x = message_costscarce.get_rect()[2]
-            screen.blit(message_costscarce, (screen_width/2 - message_costscarce_x/2 , 30))
+            global message_time
+            global message_cost
+            global message_cost_x
+            message_cost = koreanfont.render('코스트가 부족합니다',True, (0,0,0))
+            message_cost_x = message_cost.get_rect()[2]
+            message_time = 1 #game loop에서 초 줄이며 메시지 띄우기
 
 def randomEnemy(first, second, third):
     li = []
@@ -134,23 +168,24 @@ def randomEnemy(first, second, third):
     return choiced
 
 def makeStage(stage):
-
-    enemies = pygame.sprite.Group()
+    global enemy_xlocation
+    global enemy_ylocation
+    enemies = []
     if stage == 1:
         for i in range(3):
             enemy = enemySprite(randomEnemy(7,2,1), (enemy_xlocation[i], enemy_ylocation))
-            enemies.add(enemy)
+            enemies.append(enemy)
     elif stage == 2:
         for i in range(3):
             enemy = enemySprite(randomEnemy(5,3,2), (enemy_xlocation[i], enemy_ylocation))
-            enemies.add(enemy)
+            enemies.append(enemy)
     elif stage == 3:
         for i in range(5):
             enemy = enemySprite(randomEnemy(5,3,2), (enemy_xlocation[i], enemy_ylocation))
-            enemies.add(enemy)
+            enemies.append(enemy)
     elif stage == 4:
         enemy = enemySprite(4, (enemy_xlocation[0], enemy_ylocation))
-        enemies.add(enemy)
+        enemies.append(enemy)
     return enemies
 
 def start_story():
@@ -225,6 +260,7 @@ def game_loop():
     player = playerSprite("player.png", (300, 350)) #class 생성
     player_group = pygame.sprite.RenderPlain(player)
 
+    message_time = 0
     running = 1 #게임이 실행중인가?
     playerturn = 1 #플레이어 턴인가?
     stage = 1 #스테이지
@@ -263,12 +299,12 @@ def game_loop():
                     else: enemy.skill_turn -= 1
     
         screen.blit(background_image, (0,0)) #배경이미지
-        player_group.clear(screen, background_image)
-        enemies.clear(screen, background_image)
-        cards.clear(screen, background_image)
-        player_group.draw(screen)
-        enemies.draw(screen)
-        cards.draw(screen)
+        screen.blit(player_group, (playerSprite.player_position))
+        for enemy in enemies: screen.blit(enemy, (enemy_xlocation, enemy_ylocation))
+        for card in cards: screen.blit(card, (card.card_position))
+        if message_time:
+            screen.blit(message_cost, (screen_width/2 - message_cost_x/2 , 30))
+            message_time -= 0.1
 
         pygame.display.flip()
         clock.tick(10) #FPS
@@ -297,10 +333,5 @@ def end():
     
 if __name__ == "__main__": game_loop()
 
-#todo 코스트가 부족합니다 메세지 지우는 기능 추가
-#todo 스테이지 추가
-#todo 카드 파트
-#todo 카드 효과
-#todo 기본 카드 추가
 #todo 앤딩 추가
 #todo 상자 여는것 추가
