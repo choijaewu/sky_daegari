@@ -1,47 +1,75 @@
 import pygame
-from pyc import *
+import random
 import time
+from pyc import *
+from pygame.sprite import AbstractGroup
+
+pygame.init() #초기화
+
+name = '' #플레이어 이름
+
+running = 1
+
+message_time = 0 #메세지 띄우는 시간
+koreanfont = pygame.font.SysFont('malgungothic',30) #한글 폰트(맑은고딕)
+
+background_image = pygame.image.load("background.png") #배경이미지
+chest_image = pygame.image.load("상자.png") #상자이미지
+chestweapon = pygame.image.load("상자무기.png")
+chestshield = pygame.image.load("상자방패.png")
+chestfood = pygame.image.load("상자음식.png")
+background_image = pygame.transform.scale(background_image, (1300, 700))
+chest_image = pygame.transform.scale(chest_image, (250, 250))
+chestweapon = pygame.transform.scale(chestweapon, (200, 280))
+chestshield = pygame.transform.scale(chestshield, (200, 280))
+chestfood = pygame.transform.scale(chestfood, (200, 280))
+cwinfo = [100, 100, 300, 380]
+csinfo = [500, 100, 700, 380]
+cfinfo = [900, 100, 1100, 380]
+
+screen_width, screen_height = 1300, 700 #화면 넓이, 높이
+screen = pygame.display.set_mode((screen_width, screen_height)) #게임 창 크기
+pygame.display.set_caption("김건후") #게임 창 이름
+clock = pygame.time.Clock()
+
+enemy_xlocation = [600, 710, 820, 930, 1040, 1150] #적 x좌표
+enemy_ylocation = [350, 340, 340, 300] #적 y좌표
+
+cardlist = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] #카드를 가지고 있는가?
 
 
-pygame.init()
 
-screen_width, screen_height = 1200, 700
-screen = pygame.display.set_mode((screen_width, screen_height))
-koreanfont = pygame.font.SysFont('malgungothic', 30)
-story = ['건후바보',
-         '건후건후',
-         '옛날 옛적에 어느 한 마을에 김건후라는 소녀가 살았어요',
-         '그 아이는 가난했지만 어머니의 사랑만큼은 가득했죠',
-         '어느날 부자가 그녀에게 와서 이렇게 말했어요',
-         '금을 줄테니 그 순간을 나와 바꾸지 않을래?'
-         '그러자 건후가 말했어요. "도를 아십니까?"']
-times = [1, 1, 3, 3, 3, 3, 3]
-pos = [[540.0, 30],
-       [540.0, 80],
-       [216.5, 130],
-       [242.5, 180],
-       [287.5, 230],
-       [305.0, 280],
-       [3100.0, 330]]
-    
 
-def storyscene():
-    for i in range(len(story)):
-        screen.fill((0,0,0)) #검은색 배경
-        for j in range(i+1):
-            message = koreanfont.render(story[j], True, (100,100,100)) #메세지 지정
-            screen.blit(message, pos[j]) #메세지 띄우기
+images = ['초급몬스터.png','중급몬스터.png','상급몬스터.png','보스.png']
+scales = [(100, 100), (100, 100), (100, 100), (150, 150)]
+types = [1, 1, 1, 2 , 3, 4]
+cardimages = ['단검.png','장검.png','독화살.png','불화살.png','얼음화살.png','낡은방패.png','방패.png','최후의방패.png','음료수.png','물약.png', '고기.png']
 
-        pygame.display.update() #화면 업데이트
-        
+
+while running:
         for event in pygame.event.get(): #이벤트 입력
             if event.type == pygame.QUIT: #X버튼 눌렀을 때
-                break #종료
-        
-        time.sleep(times[i]) #멈추기
+                running = 0 #프로그램 종료
+        screen.blit(background_image, (0,0))
+        for i in range(6):
+            enemy_type = types[i]
+            enemy_image = pygame.image.load(images[enemy_type - 1])
+            enemy_image = pygame.transform.scale(enemy_image, scales[enemy_type - 1])
+            rect = enemy_image.get_rect()
+            
+            screen.blit(enemy_image, (enemy_xlocation[i], enemy_ylocation[enemy_type - 1]))
 
-    pygame.quit()
+        cnt = 0
+        for i in range(25, 1300, 160):
+             cardimage = pygame.image.load(cardimages[cnt])
+             cardimage = pygame.transform.scale(cardimage, (130, 190))
+             screen.blit(cardimage, (i, 480))
+             cnt+=1
+        for i in range(425, 876, 160):
+             cardimage = pygame.image.load(cardimages[cnt])
+             cardimage = pygame.transform.scale(cardimage, (130, 190))
+             screen.blit(cardimage, (i, 30))
+             cnt+=1
+        pygame.display.flip()
 
-
-        
-if __name__ == "__main__": storyscene()
+pygame.quit
