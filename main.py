@@ -9,14 +9,15 @@ pygame.init() #초기화
 
 name = '' #플레이어 이름
 
-background_image = pygame.image.load("background.png") #배경이미지
-healthimage = pygame.image.load('체력.png')
-costimage = pygame.image.load('코스트.png')
-poisonedimage = pygame.image.load('중독.png')
-stunnedimage = pygame.image.load('스턴.png')
-dealimage = pygame.image.load('공격.png')
+background_image = pygame.image.load("images/background.png") #배경이미지
+healthimage = pygame.image.load('images/체력.png')
+costimage = pygame.image.load('images/코스트.png')
+poisonedimage = pygame.image.load('images/중독.png')
+stunnedimage = pygame.image.load('images/스턴.png')
+dealimage = pygame.image.load('images/공격.png')
 defendingimage = pygame.image.load('방어.png')
-cardimages = ['단검.png','장검.png','독화살.png','불화살.png','얼음화살.png','낡은방패.png','방패.png','최후의방패.png','음료수.png','물약.png', '고기.png']
+cardimages = ['images/단검.png','images/장검.png','images/독화살.png','images/불화살.png','images/얼음화살.png','images/낡은방패.png',
+                'images/방패.png','images/최후의방패.png','images/음료수.png','images/물약.png', 'images/고기.png']
 background_image = pygame.transform.scale(background_image, (1300, 700))
 healthimage = pygame.transform.scale(healthimage, (75, 75))
 costimage = pygame.transform.scale(costimage, (60, 60))
@@ -27,7 +28,7 @@ defendingimage = pygame.transform.scale(defendingimage, (50,50))
 
 screen_width, screen_height = 1300, 700 #화면 넓이, 높이
 screen = pygame.display.set_mode((screen_width, screen_height)) #게임 창 크기
-pygame.display.set_caption("김건후") #게임 창 이름
+pygame.display.set_caption("새벽의 용사") #게임 창 이름
 clock = pygame.time.Clock()
 
 koreanfont = pygame.font.SysFont('malgungothic',30) #한글 폰트(맑은고딕)
@@ -74,10 +75,7 @@ class playerSprite(pygame.sprite.Sprite):
 
     def usecost(self, amount):
         self.current_cost -= amount
-    
-    def health_recover(self, recovering):
-        self.current_health += recovering
-        if self.current_health > self.max_health: self.current_health = self.max_health
+
     
     def health_increase(self, increasing):
         self.max_health += increasing
@@ -94,7 +92,7 @@ class playerSprite(pygame.sprite.Sprite):
 class enemySprite(pygame.sprite.Sprite):
     def __init__(self, enemy_type, position):
         pygame.sprite.Sprite.__init__(self)
-        images = ['초급몬스터.png','중급몬스터.png','상급몬스터.png','보스.png']
+        images = ['images/초급몬스터.png','images/중급몬스터.png','images/상급몬스터.png','images/보스.png']
         scales = [(100, 100), (100, 100), (100, 100), (150, 150)]
         self.enemy_image = pygame.image.load(images[enemy_type - 1])
         self.enemy_image = pygame.transform.scale(self.enemy_image, scales[enemy_type - 1])
@@ -212,7 +210,7 @@ class cardSprite(pygame.sprite.Sprite):
                 cardlist[9] = 0
 
             elif self.card_type == 11:   #고기
-                player.health_recover(2)
+                player.health_increase(2)
                 cards.remove(self)
                 cardlist[10] = 0
 
@@ -375,7 +373,7 @@ def game_loop():
     global running
     global gaming
 
-    player = playerSprite("player.png", (300, 320)) #class 생성
+    player = playerSprite("images/player.png", (300, 320)) #class 생성
 
     running = 1 #게임이 실행중인가?
     playerturn = 1 #플레이어 턴인가?
@@ -554,10 +552,10 @@ def chest(cards):
     if cardcnt < 10: message = koreanfont.render("카드 2개를 선택해주세요", True, (255,255,255))
     else: message = koreanfont.render("카드 1개를 선택해주세요", True, (255,255,255))
     
-    chest_image = pygame.image.load("상자.png") #상자이미지
-    chestweapon = pygame.image.load("상자무기.png")
-    chestshield = pygame.image.load("상자방패.png")
-    chestfood = pygame.image.load("상자음식.png")
+    chest_image = pygame.image.load("images/상자.png") #상자이미지
+    chestweapon = pygame.image.load("images/상자무기.png")
+    chestshield = pygame.image.load("images/상자방패.png")
+    chestfood = pygame.image.load("images/상자음식.png")
     chest_image = pygame.transform.scale(chest_image, (250, 250))
     chestweapon = pygame.transform.scale(chestweapon, (200, 280))
     chestshield = pygame.transform.scale(chestshield, (200, 280))
