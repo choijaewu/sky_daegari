@@ -1,2 +1,2 @@
-# sky_daegari
-choi_sky
+# GAME
+한양대 프로젝트 게임 개발
